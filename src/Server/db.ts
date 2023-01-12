@@ -8,14 +8,29 @@ const {
     POSTGRES_DB,
     POSTGRES_USER,
     POSTGRES_PASSWORD,
-    POSTGRES_PORT,
+    POSTGRES_TEST_DB,
+    ENV
 } = process.env
 
-const pool = new Pool({
-    host : POSTGRES_HOST,
-    database : POSTGRES_DB,
-    user : POSTGRES_USER,
-    password : POSTGRES_PASSWORD
-})
+let pool:any;
+console.log(ENV);
+
+if (ENV === 'test') {
+     pool = new Pool({
+        host : POSTGRES_HOST,
+        database : POSTGRES_TEST_DB,
+        user : POSTGRES_USER,
+        password : POSTGRES_PASSWORD
+    });
+}
+
+if (ENV === 'dev') {
+     pool = new Pool({
+        host : POSTGRES_HOST,
+        database : POSTGRES_DB,
+        user : POSTGRES_USER,
+        password : POSTGRES_PASSWORD
+    });
+}
 
 export default pool;
