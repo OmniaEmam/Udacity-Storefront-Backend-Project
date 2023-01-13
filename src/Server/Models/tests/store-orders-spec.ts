@@ -1,4 +1,4 @@
-import { order , storeOrder } from "../store-orders";
+import { storeOrder } from "../store-orders";
 
 const store = new storeOrder();
 

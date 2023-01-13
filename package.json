@@ -4,10 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "nodemon src/**/**.ts",
+    
+    "watch": "tsc-watch src/**/**.ts",
     "build": "npx tsc && node dist/Server/index.js",
     "lint": "eslint src/**/**.ts",
     "prettier": "prettier src/**/**.ts --config .prettierrc --write",
+    "migrate":"db-migrate --env test up && db-migrate up",
+    "test": "ENV=test db-migrate --env test up && jasmine-ts && db-migrate db:drop test",
     "jasmine": "jasmine"
   },
   "author": "",

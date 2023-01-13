@@ -1,0 +1,16 @@
+{
+    "dev": {
+      "driver": "pg",
+      "host": "localhost",
+      "database": "udacity_store_project",
+      "user": "postgres",
+      "password": "151213"
+    },
+    "test": {
+      "driver": "pg",
+      "host": "localhost",
+      "database": "udacity_store_project",
+      "user": "postgres",
+      "password": "151213"
+  }
+}

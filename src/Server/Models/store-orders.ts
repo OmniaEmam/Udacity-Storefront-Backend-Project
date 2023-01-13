@@ -1,11 +1,11 @@
 import pool from "../db";
 
 export type order = {
-    order_id : Number;
+    order_id : number;
     order_quantity: string;
     order_status: string;
-    order_product_id: Number;
-    order_user_id: Number;
+    order_product_id: number;
+    order_user_id: number;
     
 }
 
