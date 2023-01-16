@@ -3,6 +3,7 @@ import { product , idOfProduct, storeProduct, InfoOfProuduct } from "../Models/s
 
 const productOfStore =new storeProduct();
 
+//Show all Products
 const allProducts = async (req : Request , res : Response) => {
   try {
     const products : product[] = await productOfStore.index();
@@ -12,29 +13,25 @@ const allProducts = async (req : Request , res : Response) => {
   }
 };
 
+//add Product
 const addProduct = async (req : Request , res : Response) => {
     try {
-      const product_name = req.body.product_name as unknown as string;
-      const product_price = req.body.product_price as unknown as number;
-      const product_category = req.body.product_category as unknown as string;
-      
-      if (!product_name || !product_price || !product_category)
-      {
-        res.status(400);
-        res.send("Complete all fields");
-      }
+      const {product_name} = req.body;
+      const {product_price} = req.body;
+      const {product_category} = req.body;
+    
       const products : InfoOfProuduct[] = await productOfStore.addProduct({
                                                                      product_name,
                                                                      product_price,
                                                                      product_category});
-      res.json({products,});
-    
-    
+      res.json({products});
     } catch (err) {
       res.status(400).json(err);
     }
   };
 
+
+  //Show One Product
   const productOfId = async (req : Request , res : Response) => {
     try {
       const id = req.params.id as unknown as number;
@@ -46,9 +43,41 @@ const addProduct = async (req : Request , res : Response) => {
   };
 
 
+//Edit Product
+const editProduct = async (req : Request , res : Response) => {
+  try {
+    const id = req.params.id as unknown as number;
+    const {product_name} = req.body;
+    const {product_price} = req.body;
+    const {product_category} = req.body;
+  
+    const products : product[] = await productOfStore.editProduct(id , {
+                                                                   product_name,
+                                                                   product_price,
+                                                                   product_category});
+    res.json(products);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
+
+//Delete Product
+const deleteProduct = async (req : Request , res : Response) => {
+  try {
+    const id = req.params.id as unknown as number;
+    const products : idOfProduct[] = await productOfStore.deleteProduct(id);
+    res.json(products);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
+
+
 export default function routesOfProducts(app : Application)
 {
     app.get('/products' , allProducts);
     app.get('/products/:id' , productOfId);
     app.post('/products/add',addProduct);
+    app.put('/products/:id', editProduct);
+    app.delete('/products/:id', deleteProduct);
 }
