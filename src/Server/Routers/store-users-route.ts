@@ -1,5 +1,5 @@
 import { Application , Request,Response } from "express";
-import { user , idOfuser , InfoOfuser, storeUsers } from "../Models/store-users";
+import { user , idOfuser , InfoOfuser, storeUsers, userAuth } from "../Models/store-users";
 
 const userOfStore =new storeUsers();
 
@@ -73,6 +73,19 @@ const deleteUser = async (req : Request , res : Response) => {
     }
 };
 
+//authenticate User
+const authenticateUser = async (req : Request , res : Response) => {
+  try {
+    const {user_first_name} = req.body;
+    const {user_password} = req.body;
+    const users : userAuth[] | null = await userOfStore.authenticate(user_first_name , user_password);
+    res.json(users);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
+
+
 export default function routesOfUser(app : Application)
 {
     app.get('/users' , allUser);
@@ -80,4 +93,5 @@ export default function routesOfUser(app : Application)
     app.post('/users/add',addUser);
     app.put('/users/:id', editUser);
     app.delete('/users/:id', deleteUser);
+    app.post('/users/authenticate', authenticateUser);
 }

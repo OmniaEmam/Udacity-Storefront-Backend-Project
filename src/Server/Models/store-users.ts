@@ -1,11 +1,6 @@
 import pool from "../db";
 import bcrypt from 'bcrypt';
-
-const hashPass = (password : string) => {
-    const salt = parseInt(process.env.SALT_ROUNDS as string , 10);
-    return bcrypt.hashSync(`${password}${process.env.BCRYPT_PASSWORD}` , salt)
-}
-
+import hashPass from "../Handlers/hashPass";
 
 export type user = {
     user_id : number;
@@ -23,6 +18,10 @@ export type InfoOfuser = {
     user_password: string;
 }
 
+export type userAuth = {
+    user_first_name: string;
+    user_password: string;
+}
 export class storeUsers {
 
     //Show all Users

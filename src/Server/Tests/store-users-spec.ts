@@ -1,4 +1,4 @@
-import { storeUsers } from "../store-users";
+import { storeUsers } from "../Models/store-users";
 
 const store = new storeUsers();
 

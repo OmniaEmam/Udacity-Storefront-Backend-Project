@@ -1,4 +1,4 @@
-import { storeOrder } from "../store-orders";
+import { storeOrder } from "../Models/store-orders";
 
 const store = new storeOrder();
 
