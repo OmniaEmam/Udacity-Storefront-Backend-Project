@@ -1,4 +1,5 @@
 import { Application , Request,Response } from "express";
+import { authToken } from "../Handlers/authenticateUser";
 import { product , idOfProduct, storeProduct, InfoOfProuduct } from "../Models/store-products";
 
 const productOfStore =new storeProduct();
@@ -77,7 +78,7 @@ export default function routesOfProducts(app : Application)
 {
     app.get('/products' , allProducts);
     app.get('/products/:id' , productOfId);
-    app.post('/products/add',addProduct);
-    app.put('/products/:id', editProduct);
-    app.delete('/products/:id', deleteProduct);
+    app.post('/products/add',authToken,addProduct);
+    app.put('/products/:id',authToken ,editProduct);
+    app.delete('/products/:id',authToken ,deleteProduct);
 }

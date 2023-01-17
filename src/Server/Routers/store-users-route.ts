@@ -1,4 +1,5 @@
 import { Application , Request,Response } from "express";
+import { authToken, userToken } from "../Handlers/authenticateUser";
 import { user , idOfuser , InfoOfuser, storeUsers, userAuth } from "../Models/store-users";
 
 const userOfStore =new storeUsers();
@@ -26,7 +27,7 @@ const addUser = async (req : Request , res : Response) => {
         user_last_name,
         user_password});
 
-      res.json({users});
+      res.json(userToken(users));
     } catch (err) {
       res.status(400).json(err);
     }
@@ -79,7 +80,7 @@ const authenticateUser = async (req : Request , res : Response) => {
     const {user_first_name} = req.body;
     const {user_password} = req.body;
     const users : userAuth[] | null = await userOfStore.authenticate(user_first_name , user_password);
-    res.json(users);
+    res.json(userToken(users));
   } catch (err) {
     res.status(400).json(err);
   }
@@ -88,10 +89,10 @@ const authenticateUser = async (req : Request , res : Response) => {
 
 export default function routesOfUser(app : Application)
 {
-    app.get('/users' , allUser);
-    app.get('/users/:id' , userOfId);
+    app.get('/users' ,authToken, allUser);
+    app.get('/users/:id' ,authToken ,userOfId);
     app.post('/users/add',addUser);
-    app.put('/users/:id', editUser);
-    app.delete('/users/:id', deleteUser);
+    app.put('/users/:id', authToken ,editUser);
+    app.delete('/users/:id',authToken ,deleteUser);
     app.post('/users/authenticate', authenticateUser);
 }
