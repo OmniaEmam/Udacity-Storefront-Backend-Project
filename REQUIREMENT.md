@@ -36,7 +36,8 @@ These are the notes from a meeting with the frontend developer that describe wha
     "order_user_id": number}```
     
 - Edit ```app.put('/orders/:id',authToken ,editOrder);``` [token required]
--  How to enter value inito post man body => ```{
+-  How to enter value inito post man body =>
+-   ```{
     "productInfo": 
     [{
         "f_product_id": number,
