@@ -49,4 +49,19 @@ These are the notes from a meeting with the frontend developer that describe wha
 - quantity of each product in the order
 - user_id
 - status of order (active or complete)
-```CREATE TABLE store_orders(order_id SERIAL PRIMARY KEY,order_quantity VARCHAR(255),order_status  VARCHAR(255),order_product_id INT,order_user_id INT,CONSTRAINT fk_store_products FOREIGN KEY(order_product_id) REFERENCES store_products(product_id),CONSTRAINT fk_store_users FOREIGN KEY(order_user_id) REFERENCES store_users(user_id));```
+```CREATE TYPE status AS ENUM ('active', 'complete');
+   CREATE TABLE store_orders(
+    order_id SERIAL PRIMARY KEY,
+    order_status  status,
+    order_user_id INT,
+    CONSTRAINT fk_store_users FOREIGN KEY(order_user_id) REFERENCES store_users(user_id)
+);```
+
+```CREATE TABLE store_order_products (
+    order_products_id SERIAL PRIMARY KEY,
+    order_products_quantity integer,
+    f_product_id INT,
+    f_order_id INT,
+    CONSTRAINT fk_store_products FOREIGN KEY(f_product_id) REFERENCES store_products(product_id),
+    CONSTRAINT fk_store_orders FOREIGN KEY(f_order_id) REFERENCES store_orders(order_id)
+);```
