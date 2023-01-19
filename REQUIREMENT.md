@@ -25,25 +25,25 @@ These are the notes from a meeting with the frontend developer that describe wha
 - Current Order by order ``` app.get('/orders/byOrderId/:id', authToken, orderOfId);```[token required]
 - Index ```app.get('/orders' ,authToken, allOrders);```  [token required]
 - Create  ```app.post('/orders/add',authToken,addOrder);```  [token required]
-- ```How to enter value inito post man body => {
+- How to enter value inito post man body => 
+- ```{
     "productInfo": 
     [{
         "f_product_id": number,
         "order_products_quantity": number
     }],
     "order_status": "active / complete"
-    "order_user_id": number
+    "order_user_id": number}```
     
-}```
 - Edit ```app.put('/orders/:id',authToken ,editOrder);``` [token required]
--  ```How to enter value inito post man body => {
+-  How to enter value inito post man body => ```{
     "productInfo": 
     [{
         "f_product_id": number,
         "order_products_quantity": number
     }],
-    "order_status": "active / complete"
-}```
+    "order_status": "active / complete" }```
+    
 - Delete ```app.delete('/orders/:id',authToken ,deleteOrder);``` [token required]
 
 ## Data Shapes
