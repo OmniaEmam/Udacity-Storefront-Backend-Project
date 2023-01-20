@@ -11,8 +11,7 @@ the application use of the following libraries:
 - jsonwebtoken from npm for working with JWTs
 - jasmine from npm for testing
 
-###Ports
-Server on port 2000 and database on port 5432
+### Ports Server on port 2000 and database on port 5432
 
 ### TO Run The Project 
 - Download it on your desktop and follow the instructions
