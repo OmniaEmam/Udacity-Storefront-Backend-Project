@@ -82,7 +82,7 @@ const editOrder = async (req: Request, res: Response) => {
   }
 };
 
-// //Delete Order
+//Delete Order
 const deleteOrder = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as unknown as number;

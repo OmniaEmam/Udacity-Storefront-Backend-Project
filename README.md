@@ -1,6 +1,18 @@
 # Udacity-Storefront-Backend-Project
- 
 ## It is an Backend Store API 
+- Typescript API based on udacitiy REQUIREMENTS. Should e ready for front-end developer to develop
+
+## Required Technologies
+the application use of the following libraries:
+- Postgres for the database
+- Node/Express for the application logic
+- dotenv from npm for managing environment variables
+- db-migrate from npm for migrations
+- jsonwebtoken from npm for working with JWTs
+- jasmine from npm for testing
+
+###Ports
+Server on port 2000 and database on port 5432
 
 ### TO Run The Project 
 - Download it on your desktop and follow the instructions

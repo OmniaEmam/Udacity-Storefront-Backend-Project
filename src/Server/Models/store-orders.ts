@@ -152,8 +152,10 @@ export class storeOrder {
   async deleteOrder(id: number): Promise<order[]> {
     try {
       const conn = await pool.connect();
-      const sql = `DELETE FROM store_orders WHERE order_id=($1)`;
-      const result = await conn.query(sql, [id]);
+      const sql1 = `DELETE FROM store_order_products WHERE f_order_id=($1)`;
+      await conn.query(sql1, [id]);
+      const sql2 = `DELETE FROM store_orders WHERE order_id=($1)`;
+      const result = await conn.query(sql2, [id]);
       conn.release();
       return result.rows[0];
     } catch (err) {
