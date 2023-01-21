@@ -32,7 +32,7 @@ describe('Store User Model', () => {
 
   // Test index return specific user
   it('should index of users be return one specific user ', async () => {
-    const id = 1;
+    const id = 1; //Should get from db store_users
     const users: idOfuser[] = await userOfStore.indexOfId(id);
     const conn = await pool.connect();
     const sql = 'SELECT * FROM store_users';
@@ -70,7 +70,7 @@ describe('Store User Model', () => {
 
   // Test edit user
   it('should edit user ', async () => {
-    const id = 50;
+    const id = 1; //Should get from db store_users
     const user_first_name = 'Rana';
     const user_last_name = 'Nour';
     const user_password = 'Rana1234';
@@ -98,7 +98,7 @@ describe('Store User Model', () => {
 
   // Test delete user
   it('should delete user ', async () => {
-    const id = 50;
+    const id = 1; //Should get from db store_users
 
     const users: idOfuser[] = await userOfStore.deleteUser(id);
     const conn = await pool.connect();
@@ -112,8 +112,8 @@ describe('Store User Model', () => {
 
   // Test authenticate user
   it('should authenticate user ', async () => {
-    const user_first_name = 'Mona';
-    const user_password = 'Mona1234';
+    const user_first_name = 'Omnia'; //Should get it from db store_users
+    const user_password = 'Omnia1234'; //Should get it from db store_users
 
     const users: userAuth[] | null = await userOfStore.authenticate(
       user_first_name,

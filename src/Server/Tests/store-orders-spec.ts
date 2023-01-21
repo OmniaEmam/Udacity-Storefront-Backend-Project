@@ -31,7 +31,7 @@ describe('Store Order Model', () => {
 
   // Test index return specific order by OrderId
   it('should index of order be return one specific order by OrderId ', async () => {
-    const id = 4;
+    const id = 1; //Should get from db store_orders
     const orders: idOfOrder[] = await orderOfStore.orderByOrderId(id);
 
     const conn = await pool.connect();
@@ -49,7 +49,7 @@ describe('Store Order Model', () => {
 
   // Test index return specific order by UserId
   it('should index of order be return one specific order by UserId ', async () => {
-    const id = 4;
+    const id = 1;  //Should get from db store_orders
     const orders: idOfOrder[] = await orderOfStore.orderByUserId(id);
 
     const conn = await pool.connect();
@@ -68,11 +68,11 @@ describe('Store Order Model', () => {
   // Test add Order
   it('should add Order ', async () => {
     const productInfo = [{
-        f_product_id: 2,
+        f_product_id: 1,  //Should get from db store_orders
         order_products_quantity: 4
     }];
     const order_status = 'active';
-    const order_user_id = 1;
+    const order_user_id = 1; //Should get from db store_orders
 
       const conn = await pool.connect();
       const orderInfoSql = `INSERT INTO store_orders (order_status , order_user_id) VALUES ($1,$2) RETURNING *`;
@@ -103,9 +103,9 @@ describe('Store Order Model', () => {
 
   // Test edit Order
   it('should edit Order ', async () => {
-    const id = 1;
+    const id = 1;  //Should get from db store_orders
     const productInfo = [{
-        f_product_id: 2,
+        f_product_id: 1,  //Should get from db store_orders
         order_products_quantity: 4
     }];
     const order_status = 'complete';
@@ -142,7 +142,7 @@ describe('Store Order Model', () => {
 
   // Test delete order
   it('should delete order ', async () => {
-    const id = 1;
+    const id = 1; //Should get from db store_orders
     const orders: idOfOrder[] = await orderOfStore.deleteOrder(id);
     const conn = await pool.connect();
     const sql1 = `DELETE FROM store_order_products WHERE f_order_id=($1)`;

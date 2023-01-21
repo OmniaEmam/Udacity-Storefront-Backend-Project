@@ -26,24 +26,24 @@ These are the notes from a meeting with the frontend developer that describe wha
 - Index ```app.get('/orders' ,authToken, allOrders);```  [token required]
 - Create  ```app.post('/orders/add',authToken,addOrder);```  [token required]
 - How to enter value inito post man body => 
-- ```{
+- ``` {
     "productInfo": 
     [{
         "f_product_id": number,
         "order_products_quantity": number
     }],
     "order_status": "active / complete"
-    "order_user_id": number}```
+    "order_user_id": number}  ```
     
 - Edit ```app.put('/orders/:id',authToken ,editOrder);``` [token required]
 -  How to enter value inito post man body =>
--   ```{
+-   ``` {
     "productInfo": 
     [{
         "f_product_id": number,
         "order_products_quantity": number
     }],
-    "order_status": "active / complete" }```
+    "order_status": "active / complete" } ```
     
 - Delete ```app.delete('/orders/:id',authToken ,deleteOrder);``` [token required]
 
@@ -55,6 +55,11 @@ These are the notes from a meeting with the frontend developer that describe wha
 - [OPTIONAL] category
 ```CREATE TABLE store_products(product_id SERIAL PRIMARY KEY,product_name VARCHAR(255),product_price INT,product_category VARCHAR(255)); ```
 
+- You should insert values here or in postman to test the code like this :
+```INSERT INTO store_products (product_name, product_price, product_category) VALUES ('RedShoe',300,'Shoes); ```
+
+
+
 #### User
 - id
 - firstName
@@ -62,12 +67,16 @@ These are the notes from a meeting with the frontend developer that describe wha
 - password
 ```CREATE TABLE store_users(user_id SERIAL PRIMARY KEY,user_first_name VARCHAR(255),user_last_name VARCHAR(255),user_password VARCHAR(255));```
 
+- You should insert values here or in postman to test the code like this :
+```INSERT INTO store_users (user_first_name, user_last_name, user_password) VALUES ('John','Adem','John1234'); ```
+
 #### Orders
 - id
 - id of each product in the order
 - quantity of each product in the order
 - user_id
 - status of order (active or complete)
+- 
 ```CREATE TYPE status AS ENUM ('active', 'complete');
    CREATE TABLE store_orders(
     order_id SERIAL PRIMARY KEY,
@@ -75,12 +84,19 @@ These are the notes from a meeting with the frontend developer that describe wha
     order_user_id INT,
     CONSTRAINT fk_store_users FOREIGN KEY(order_user_id) REFERENCES store_users(user_id)
 );```
-
+- 
 ```CREATE TABLE store_order_products (
     order_products_id SERIAL PRIMARY KEY,
     order_products_quantity integer,
     f_product_id INT,
     f_order_id INT,
     CONSTRAINT fk_store_products FOREIGN KEY(f_product_id) REFERENCES store_products(product_id),
-    CONSTRAINT fk_store_orders FOREIGN KEY(f_order_id) REFERENCES store_orders(order_id)
-);```
+    CONSTRAINT fk_store_orders FOREIGN KEY(f_order_id) REFERENCES store_orders(order_id));```
+
+
+- You should insert values here or in postman to test the code like this :
+```INSERT INTO store_orders (order_status , order_user_id) VALUES ('active',1); ```
+```INSERT INTO store_order_products 
+                                  (f_order_id , f_product_id, order_products_quantity) 
+                                  VALUES(1, 1,2); ```
+

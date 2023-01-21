@@ -30,7 +30,7 @@ describe('Store Product Model', () => {
 
   // Test index return specific products
   it('should index of products be return one specific product ', async () => {
-    const id = 1;
+    const id = 1;  //Should get from db store_products
     const products: idOfProduct[] = await store.indexOfId(id);
     const conn = await pool.connect();
     const sql = 'SELECT * FROM store_products WHERE product_id=($1)';
@@ -53,7 +53,7 @@ it('should add product ', async () => {
 
     const conn = await pool.connect();
     const sql =
-      'INSERT INTO store_users (user_first_name, user_last_name, user_password) VALUES ($1,$2,$3)';
+      'INSERT INTO store_products (product_name, product_price, product_category) VALUES ($1,$2,$3)';
     const result = await conn.query(sql, [
         product_name,
         product_price,
@@ -66,7 +66,7 @@ it('should add product ', async () => {
 
    // Test edit product
    it('should edit product ', async () => {
-    const id = 8;
+    const id = 1; //Should get from db store_products
     const product_name = 'BrowenShoes';
     const product_price = 300;
     const product_category = 'Shoes';
@@ -92,11 +92,13 @@ it('should add product ', async () => {
 
    // Test delete product
    it('should delete product ', async () => {
-    const id = 8;
+    const id = 1; //Should get from db store_products
     const products: idOfProduct[] = await store.deleteProduct(id);
     const conn = await pool.connect();
-    const sql = `DELETE FROM store_products WHERE product_id=($1)`;
-    const result = await conn.query(sql, [id]);
+    const sql1 = `DELETE FROM store_order_products WHERE f_product_id=($1)`;
+    await conn.query(sql1, [id]);
+    const sql2 = `DELETE FROM store_products WHERE product_id=($1)`;
+    const result = await conn.query(sql2, [id]);
     conn.release();
     
     expect(result.rows[0]).toEqual(products);
