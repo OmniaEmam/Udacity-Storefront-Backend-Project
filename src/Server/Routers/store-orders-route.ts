@@ -32,7 +32,7 @@ const addOrder = async (req: Request, res: Response) => {
       return false;
     }
 
-    const orders: InfoToAddOrder[] = await orderOfStore.addOrder({
+    const orders: order = await orderOfStore.addOrder({
       productInfo,
       order_status,
       order_user_id,
@@ -47,7 +47,7 @@ const addOrder = async (req: Request, res: Response) => {
 const orderOfId = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as unknown as number;
-    const orders: idOfOrder[] = await orderOfStore.orderByOrderId(id);
+    const orders: order[] = await orderOfStore.orderByOrderId(id);
     res.json(orders);
   } catch (err) {
     res.status(400).json(err);
@@ -58,7 +58,7 @@ const orderOfId = async (req: Request, res: Response) => {
 const orderByUserId = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as unknown as number;
-    const orders: idOfOrder[] = await orderOfStore.orderByUserId(id);
+    const orders: order[] = await orderOfStore.orderByUserId(id);
     res.json(orders);
   } catch (err) {
     res.status(400).json(err);
@@ -72,7 +72,7 @@ const editOrder = async (req: Request, res: Response) => {
     const { productInfo } = req.body;
     const { order_status } = req.body;
 
-    const orders: InfoToEditOrder[] = await orderOfStore.editOrder(id, {
+    const orders: order = await orderOfStore.editOrder(id, {
       productInfo,
       order_status,
     });
@@ -86,7 +86,7 @@ const editOrder = async (req: Request, res: Response) => {
 const deleteOrder = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as unknown as number;
-    const orders: idOfOrder[] = await orderOfStore.deleteOrder(id);
+    const orders: order = await orderOfStore.deleteOrder(id);
     res.json(orders);
   } catch (err) {
     res.status(400).json(err);

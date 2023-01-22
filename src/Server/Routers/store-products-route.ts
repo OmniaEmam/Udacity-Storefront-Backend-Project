@@ -1,11 +1,6 @@
 import { Application, Request, Response } from 'express';
 import { authToken } from '../Handlers/authenticateUser';
-import {
-  product,
-  idOfProduct,
-  storeProduct,
-  InfoOfProuduct,
-} from '../Models/store-products';
+import { product, storeProduct } from '../Models/store-products';
 
 const productOfStore = new storeProduct();
 
@@ -26,7 +21,7 @@ const addProduct = async (req: Request, res: Response) => {
     const { product_price } = req.body;
     const { product_category } = req.body;
 
-    const products: InfoOfProuduct[] = await productOfStore.addProduct({
+    const products: product = await productOfStore.addProduct({
       product_name,
       product_price,
       product_category,
@@ -41,7 +36,7 @@ const addProduct = async (req: Request, res: Response) => {
 const productOfId = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as unknown as number;
-    const products: idOfProduct[] = await productOfStore.indexOfId(id);
+    const products: product = await productOfStore.indexOfId(id);
     res.json(products);
   } catch (err) {
     res.status(400).json(err);
@@ -56,7 +51,7 @@ const editProduct = async (req: Request, res: Response) => {
     const { product_price } = req.body;
     const { product_category } = req.body;
 
-    const products: product[] = await productOfStore.editProduct(id, {
+    const products: product = await productOfStore.editProduct(id, {
       product_name,
       product_price,
       product_category,
@@ -71,7 +66,7 @@ const editProduct = async (req: Request, res: Response) => {
 const deleteProduct = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as unknown as number;
-    const products: idOfProduct[] = await productOfStore.deleteProduct(id);
+    const products: product = await productOfStore.deleteProduct(id);
     res.json(products);
   } catch (err) {
     res.status(400).json(err);

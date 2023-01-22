@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { userAuth } from '../Models/store-users';
+import user from '../Types/usertype';
 import jwt, { Secret } from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
@@ -24,6 +24,6 @@ export const authToken = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export const userToken = (user: userAuth[] | null) => {
+export const userToken = (user: user | null) => {
   return jwt.sign({ user }, SecretToken);
 };

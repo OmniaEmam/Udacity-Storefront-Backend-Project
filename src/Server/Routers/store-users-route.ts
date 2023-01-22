@@ -1,12 +1,7 @@
 import { Application, Request, Response } from 'express';
 import { authToken, userToken } from '../Handlers/authenticateUser';
-import {
-  user,
-  idOfuser,
-  InfoOfuser,
-  storeUsers,
-  userAuth,
-} from '../Models/store-users';
+import { storeUsers } from '../Models/store-users';
+import user from '../Types/usertype';
 
 const userOfStore = new storeUsers();
 
@@ -27,7 +22,7 @@ const addUser = async (req: Request, res: Response) => {
     const { user_last_name } = req.body;
     const { user_password } = req.body;
 
-    const users: InfoOfuser[] = await userOfStore.addUser({
+    const users: user = await userOfStore.addUser({
       user_first_name,
       user_last_name,
       user_password,
@@ -43,7 +38,7 @@ const addUser = async (req: Request, res: Response) => {
 const userOfId = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as unknown as number;
-    const users: idOfuser[] = await userOfStore.indexOfId(id);
+    const users: user = await userOfStore.indexOfId(id);
     res.json(users);
   } catch (err) {
     res.status(400).json(err);
@@ -58,7 +53,7 @@ const editUser = async (req: Request, res: Response) => {
     const { user_last_name } = req.body;
     const { user_password } = req.body;
 
-    const users: InfoOfuser[] = await userOfStore.editUser(id, {
+    const users: user = await userOfStore.editUser(id, {
       user_first_name,
       user_last_name,
       user_password,
@@ -74,7 +69,7 @@ const editUser = async (req: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as unknown as number;
-    const users: idOfuser[] = await userOfStore.deleteUser(id);
+    const users: user = await userOfStore.deleteUser(id);
     res.json(users);
   } catch (err) {
     res.status(400).json(err);
@@ -86,7 +81,7 @@ const authenticateUser = async (req: Request, res: Response) => {
   try {
     const { user_first_name } = req.body;
     const { user_password } = req.body;
-    const users: userAuth[] | null = await userOfStore.authenticate(
+    const users: user | null = await userOfStore.authenticate(
       user_first_name,
       user_password
     );

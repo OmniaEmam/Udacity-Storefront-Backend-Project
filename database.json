@@ -9,7 +9,7 @@
     "test": {
       "driver": "pg",
       "host": "localhost",
-      "database": "udacity_store_project",
+      "database": "udacity_store_project_test",
       "user": "postgres",
       "password": "151213"
   }

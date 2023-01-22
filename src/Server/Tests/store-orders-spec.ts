@@ -1,157 +1,217 @@
-import pool from "../db";
-import { idOfOrder, InfoToEditOrder, order, storeOrder } from "../Models/store-orders";
-
-
+import pool from '../db';
+import { order, storeOrder } from '../Models/store-orders';
+import { product, storeProduct } from '../Models/store-products';
+import { storeUsers } from '../Models/store-users';
+import user from '../Types/usertype';
 
 const orderOfStore = new storeOrder();
+const productOfStore = new storeProduct();
+const userOfStore = new storeUsers();
+
 // Test endpoint responses
 describe('Store Order Model', () => {
-
-    // Test index be defined
-    it('should index of order be defined', async () => {
-      const orders: order[] = await orderOfStore.index();
-      expect(orders).toBeDefined();
+  // Test index be defined
+  describe('Store Order Functioins to be defined', () => {
+    it('should index of Order be defined', async () => {
+      expect(orderOfStore.index).toBeDefined();
     });
 
-   // Test index return orders length
-  it('should index be return orders length', async () => {
-    const orders: order[] = await orderOfStore.index();
-    expect(orders.length).toBeGreaterThan(0);
+    it('should index by orderByOrderId of Order be defined', async () => {
+      expect(orderOfStore.orderByOrderId).toBeDefined();
+    });
+
+    it('should add of Order orderByUserId defined', async () => {
+      expect(orderOfStore.orderByUserId).toBeDefined();
+    });
+
+    it('should add of Order be defined', async () => {
+      expect(orderOfStore.addOrder).toBeDefined();
+    });
+
+    it('should edit of Order be defined', async () => {
+      expect(orderOfStore.editOrder).toBeDefined();
+    });
+
+    it('should delete of Order be defined', async () => {
+      expect(orderOfStore.deleteOrder).toBeDefined();
+    });
   });
 
-  // Test index return orders
-  it('should index of order be return orders ', async () => {
-    const orders: order[] = await orderOfStore.index();
-    const conn = await pool.connect();
-    const sql = 'SELECT * FROM store_orders';
-    const result = await conn.query(sql);
-    conn.release();
-    expect(result.rows).toEqual(orders);
-  });
+  // Test Functions works
+  describe('Store Order Functions works', () => {
+    const Product = {
+      product_name: 'WhiteShoes',
+      product_price: 300,
+      product_category: 'Shoe',
+    } as product;
 
-  // Test index return specific order by OrderId
-  it('should index of order be return one specific order by OrderId ', async () => {
-    const id = 1; //Should get from db store_orders
-    const orders: idOfOrder[] = await orderOfStore.orderByOrderId(id);
+    const User = {
+      user_first_name: 'Adam',
+      user_last_name: 'Sander',
+      user_password: 'Adam1234',
+    } as user;
 
-    const conn = await pool.connect();
-    const sql = `SELECT store_orders.* , 
-                         store_order_products.order_products_quantity , 
-                         store_order_products.f_product_id
-                         FROM store_orders JOIN store_order_products ON store_orders.order_id = store_order_products.f_order_id
-                         WHERE order_id=($1)`;
-    const result = await conn.query(sql, [id]);
-    conn.release();
+    const Order = {
+      productInfo: [
+        {
+          f_product_id: 1,
+          order_products_quantity: 3,
+        },
+      ],
+      order_status: 'complete',
+      order_user_id: 1,
+    } as order;
 
-    expect(result.rows).toEqual(orders);
-  });
+    // create a order
+    it('should create a order', async () => {
+      await userOfStore.addUser(User);
+      await productOfStore.addProduct(Product);
+      const createdOrder: order = await orderOfStore.addOrder(Order);
+      expect(createdOrder.productInfo[0].f_product_id).toBe(
+        Order.productInfo[0].f_product_id
+      );
+      expect(createdOrder.productInfo[0].order_products_quantity).toBe(
+        Order.productInfo[0].order_products_quantity
+      );
+      expect(createdOrder.order_status).toBe(Order.order_status);
+      expect(createdOrder.order_user_id).toBe(Order.order_user_id);
 
-
-  // Test index return specific order by UserId
-  it('should index of order be return one specific order by UserId ', async () => {
-    const id = 1;  //Should get from db store_orders
-    const orders: idOfOrder[] = await orderOfStore.orderByUserId(id);
-
-    const conn = await pool.connect();
-    const sql = `SELECT store_orders.* , 
-                       store_order_products.order_products_quantity , 
-                       store_order_products.f_product_id
-                       FROM store_orders JOIN store_order_products ON store_orders.order_id = store_order_products.f_order_id
-                       WHERE order_user_id=($1)`;
-    const result = await conn.query(sql, [id]);
-    conn.release();
-
-    expect(result.rows).toEqual(orders);
-  });
-
-
-  // Test add Order
-  it('should add Order ', async () => {
-    const productInfo = [{
-        f_product_id: 1,  //Should get from db store_orders
-        order_products_quantity: 4
-    }];
-    const order_status = 'active';
-    const order_user_id = 1; //Should get from db store_orders
-
+      //Delete
       const conn = await pool.connect();
-      const orderInfoSql = `INSERT INTO store_orders (order_status , order_user_id) VALUES ($1,$2) RETURNING *`;
-      const result1 = await conn.query(orderInfoSql, [
-        order_status,
-        order_user_id,
+
+      // user
+      const sqlUser = `SELECT user_id FROM store_users WHERE user_first_name =($1)`;
+      const resultUser = await conn.query(sqlUser, [User.user_first_name]);
+      const UserID: number = resultUser.rows[0].user_id;
+      // Product
+      const sqlProduct = `SELECT product_id FROM store_products WHERE product_name =($1)`;
+      const resultProduct = await conn.query(sqlProduct, [
+        Product.product_name,
       ]);
-      const ProductInfoSql = `INSERT INTO store_order_products 
-                                  (f_order_id , f_product_id, order_products_quantity) 
-                                  VALUES($1, $2, $3) 
-                                  RETURNING f_product_id, order_products_quantity`;
-      const orderProducts = [];
-      for (const product of productInfo) {
-        const { f_product_id, order_products_quantity } = product;
-        const result2 = await conn.query(ProductInfoSql, [
-          result1.rows[0].order_id,
-          f_product_id,
-          order_products_quantity,
-        ]);
-        orderProducts.push(result2.rows[0]);
-      }
+      const ProductID: number = resultProduct.rows[0].product_id;
+      // Order
+      const sql = `SELECT order_id FROM store_orders WHERE order_status=($1)`;
+      const result = await conn.query(sql, [Order.order_status]);
+      const OrderID: number = result.rows[0].order_id;
+
       conn.release();
-    expect(productInfo).toEqual(orderProducts);
-    expect(order_status).toEqual(result1.rows[0].order_status);
-    expect(order_user_id).toEqual(result1.rows[0].order_user_id);
-  });
 
+      await orderOfStore.deleteOrder(OrderID);
+      await userOfStore.deleteUser(UserID);
+      await productOfStore.deleteProduct(ProductID);
+    });
 
-  // Test edit Order
-  it('should edit Order ', async () => {
-    const id = 1;  //Should get from db store_orders
-    const productInfo = [{
-        f_product_id: 1,  //Should get from db store_orders
-        order_products_quantity: 4
-    }];
-    const order_status = 'complete';
+    // edit a order
+    it('should edit a order', async () => {
+      await userOfStore.addUser(User);
+      await productOfStore.addProduct(Product);
+      await orderOfStore.addOrder(Order);
+      const editedOrder = {
+        productInfo: [
+          {
+            f_product_id: 1,
+            order_products_quantity: 5,
+          },
+        ],
+        order_status: 'active',
+      } as order;
 
-    const orders: InfoToEditOrder[] = await orderOfStore.editOrder(id, {
-        productInfo,
-        order_status,
-      });
-
+      // Order
       const conn = await pool.connect();
-      const orderInfoSql =
-        'UPDATE store_orders SET order_status = $1 WHERE order_id=($2) RETURNING *';
-      const result1 = await conn.query(orderInfoSql, [order_status, id]);
-      const ProductInfoSql = `UPDATE store_order_products 
-                                   SET f_product_id = $1 , order_products_quantity = $2 
-                                   WHERE f_order_id=($3)
-                                   RETURNING f_product_id, order_products_quantity`;
-      const orderProducts = [];
-      for (const product of productInfo) {
-        const { f_product_id, order_products_quantity } = product;
-        const result2 = await conn.query(ProductInfoSql, [
-          f_product_id,
-          order_products_quantity,
-          id,
-        ]);
-        orderProducts.push(result2.rows[0]);
-      }
+      const sql = `SELECT order_id FROM store_orders WHERE order_status=($1)`;
+      const result = await conn.query(sql, [Order.order_status]);
+      const OrderID: number = result.rows[0].order_id;
+
+      // user
+      const sqlUser = `SELECT user_id FROM store_users WHERE user_first_name =($1)`;
+      const resultUser = await conn.query(sqlUser, [User.user_first_name]);
+      const UserID: number = resultUser.rows[0].user_id;
+      // Product
+      const sqlProduct = `SELECT product_id FROM store_products WHERE product_name =($1)`;
+      const resultProduct = await conn.query(sqlProduct, [
+        Product.product_name,
+      ]);
+      const ProductID: number = resultProduct.rows[0].product_id;
+
       conn.release();
-    expect({
-        ...result1.rows[0],
-        productInfo: orderProducts,
-      }).toEqual(orders);
+
+      const editOrder: order = await orderOfStore.editOrder(
+        OrderID,
+        editedOrder
+      );
+      expect(editOrder.productInfo[0].f_product_id).toBe(
+        editedOrder.productInfo[0].f_product_id
+      );
+      expect(editOrder.productInfo[0].order_products_quantity).toBe(
+        editedOrder.productInfo[0].order_products_quantity
+      );
+      expect(editOrder.order_status).toBe(editedOrder.order_status);
+
+      await orderOfStore.deleteOrder(OrderID);
+      await userOfStore.deleteUser(UserID);
+      await productOfStore.deleteProduct(ProductID);
+    });
+
+    // get orders length
+    it('should get orders length', async () => {
+      await userOfStore.addUser(User);
+      await productOfStore.addProduct(Product);
+      await orderOfStore.addOrder(Order);
+
+      const orders: order[] = await orderOfStore.index();
+      expect(orders.length).toBeGreaterThan(0);
+
+      // Order
+      const conn = await pool.connect();
+      const sql = `SELECT order_id FROM store_orders WHERE order_status=($1)`;
+      const result = await conn.query(sql, [Order.order_status]);
+      const OrderID: number = result.rows[0].order_id;
+
+      // user
+      const sqlUser = `SELECT user_id FROM store_users WHERE user_first_name =($1)`;
+      const resultUser = await conn.query(sqlUser, [User.user_first_name]);
+      const UserID: number = resultUser.rows[0].user_id;
+      // Product
+      const sqlProduct = `SELECT product_id FROM store_products WHERE product_name =($1)`;
+      const resultProduct = await conn.query(sqlProduct, [
+        Product.product_name,
+      ]);
+      const ProductID: number = resultProduct.rows[0].product_id;
+
+      conn.release();
+
+      await orderOfStore.deleteOrder(OrderID);
+      await userOfStore.deleteUser(UserID);
+      await productOfStore.deleteProduct(ProductID);
+    });
+
+    // delete order
+    it('should delete order', async () => {
+      await userOfStore.addUser(User);
+      await productOfStore.addProduct(Product);
+      const createdOrder: order = await orderOfStore.addOrder(Order);
+
+      // Order
+      const conn = await pool.connect();
+      const sql = `SELECT order_id FROM store_orders WHERE order_status=($1)`;
+      const result = await conn.query(sql, [Order.order_status]);
+      const OrderID: number = result.rows[0].order_id;
+      // user
+      const sqlUser = `SELECT user_id FROM store_users WHERE user_first_name =($1)`;
+      const resultUser = await conn.query(sqlUser, [User.user_first_name]);
+      const UserID: number = resultUser.rows[0].user_id;
+      // Product
+      const sqlProduct = `SELECT product_id FROM store_products WHERE product_name =($1)`;
+      const resultProduct = await conn.query(sqlProduct, [
+        Product.product_name,
+      ]);
+      const ProductID: number = resultProduct.rows[0].product_id;
+
+      conn.release();
+      await orderOfStore.deleteOrder(OrderID);
+      await userOfStore.deleteUser(UserID);
+      await productOfStore.deleteProduct(ProductID);
+      expect(createdOrder.productInfo).toBeNull;
+    });
   });
-
-  // Test delete order
-  it('should delete order ', async () => {
-    const id = 1; //Should get from db store_orders
-    const orders: idOfOrder[] = await orderOfStore.deleteOrder(id);
-    const conn = await pool.connect();
-    const sql1 = `DELETE FROM store_order_products WHERE f_order_id=($1)`;
-    await conn.query(sql1, [id]);
-    const sql2 = `DELETE FROM store_orders WHERE order_id=($1)`;
-    const result = await conn.query(sql2, [id]);
-    conn.release();
-    expect(result.rows[0]).toEqual(orders);
-  });
-
-
 });

@@ -42,7 +42,8 @@ Authorization token in postman Type => Bearer Token  "token"
 ```
 
 ### To test the code 
-- Run ```npm run test``` , ```npm run jasmine```
+- Run ```CREATE DATABASE udacity_store_project_test;``` in postgres cmd then
+- Run ```npm run jasmine```
 
 ### To run lint or prettier
 - Run ```npm run lint``` to run the tests script in ```../package.json```

@@ -1,27 +1,8 @@
 import pool from '../db';
 import bcrypt from 'bcrypt';
 import hashPass from '../Handlers/hashPass';
+import user from '../Types/usertype';
 
-export type user = {
-  user_id: number;
-  user_first_name: string;
-  user_last_name: string;
-  user_password: string;
-};
-export type idOfuser = {
-  user_id: number;
-};
-
-export type InfoOfuser = {
-  user_first_name: string;
-  user_last_name: string;
-  user_password: string;
-};
-
-export type userAuth = {
-  user_first_name: string;
-  user_password: string;
-};
 export class storeUsers {
   //Show all Users
   async index(): Promise<user[]> {
@@ -37,7 +18,7 @@ export class storeUsers {
   }
 
   //Show One User
-  async indexOfId(id: number): Promise<user[]> {
+  async indexOfId(id: number): Promise<user> {
     try {
       const conn = await pool.connect();
       const sql = `SELECT * FROM store_users WHERE user_id =($1)`;
@@ -50,12 +31,12 @@ export class storeUsers {
   }
 
   //add User
-  async addUser(user: InfoOfuser): Promise<user[]> {
+  async addUser(user: user): Promise<user> {
     const { user_first_name, user_last_name, user_password } = user;
     try {
       const conn = await pool.connect();
       const sql =
-        'INSERT INTO store_users (user_first_name, user_last_name, user_password) VALUES ($1,$2,$3)';
+        'INSERT INTO store_users (user_first_name, user_last_name, user_password) VALUES ($1,$2,$3)  RETURNING *';
       const result = await conn.query(sql, [
         user_first_name,
         user_last_name,
@@ -71,12 +52,12 @@ export class storeUsers {
   }
 
   //Edit User
-  async editUser(id: number, user: InfoOfuser): Promise<user[]> {
+  async editUser(id: number, user: user): Promise<user> {
     const { user_first_name, user_last_name, user_password } = user;
     try {
       const conn = await pool.connect();
       const sql =
-        'UPDATE store_users SET user_first_name = $1, user_last_name = $2, user_password = $3 WHERE user_id=($4)';
+        'UPDATE store_users SET user_first_name = $1, user_last_name = $2, user_password = $3 WHERE user_id=($4) RETURNING *';
       const result = await conn.query(sql, [
         user_first_name,
         user_last_name,
@@ -93,10 +74,10 @@ export class storeUsers {
   }
 
   //Delete User
-  async deleteUser(id: number): Promise<user[]> {
+  async deleteUser(id: number): Promise<user> {
     try {
       const conn = await pool.connect();
-      const sql = `DELETE FROM store_users WHERE user_id=($1)`;
+      const sql = `DELETE FROM store_users WHERE user_id=($1) RETURNING *;`;
       const result = await conn.query(sql, [id]);
       conn.release();
       return result.rows[0];
@@ -109,7 +90,7 @@ export class storeUsers {
   async authenticate(
     user_first_name: string,
     user_password: string
-  ): Promise<user[] | null> {
+  ): Promise<user | null> {
     try {
       const conn = await pool.connect();
       const sql =

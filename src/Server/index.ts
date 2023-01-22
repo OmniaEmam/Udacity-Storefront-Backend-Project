@@ -6,7 +6,11 @@ import routesOfUser from './Routers/store-users-route';
 import routesOfOrders from './Routers/store-orders-route';
 
 const app: Application = express();
-const port = 2000;
+let port = 2000;
+
+if (process.env.ENV === 'test') {
+  port = 2001;
+}
 
 app.use(cors());
 app.use(express.json());

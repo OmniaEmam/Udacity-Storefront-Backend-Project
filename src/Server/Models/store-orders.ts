@@ -2,12 +2,12 @@ import pool from '../db';
 
 export type order = {
   productInfo: order_products[];
-  order_id: number;
-  f_order_id: number;
+  order_id?: number;
+  f_order_id?: number;
   order_status: string;
-  order_user_id: number;
-  order_products_quantity: number;
-  f_product_id: number;
+  order_user_id?: number;
+  order_products_quantity?: number;
+  f_product_id?: number;
 };
 
 export type order_products = {
@@ -79,7 +79,7 @@ export class storeOrder {
   }
 
   //add Order
-  async addOrder(order: InfoToAddOrder): Promise<order[]> {
+  async addOrder(order: order): Promise<order> {
     const { productInfo, order_status, order_user_id } = order;
     try {
       const conn = await pool.connect();
@@ -91,7 +91,7 @@ export class storeOrder {
       const ProductInfoSql = `INSERT INTO store_order_products 
                                   (f_order_id , f_product_id, order_products_quantity) 
                                   VALUES($1, $2, $3) 
-                                  RETURNING f_product_id, order_products_quantity`;
+                                  RETURNING *`;
       const orderProducts = [];
       for (const product of productInfo) {
         const { f_product_id, order_products_quantity } = product;
@@ -115,7 +115,7 @@ export class storeOrder {
   }
 
   //Edit Order
-  async editOrder(id: number, order: InfoToEditOrder): Promise<order[]> {
+  async editOrder(id: number, order: order): Promise<order> {
     const { productInfo, order_status } = order;
     try {
       const conn = await pool.connect();
@@ -125,7 +125,7 @@ export class storeOrder {
       const ProductInfoSql = `UPDATE store_order_products 
                                    SET f_product_id = $1 , order_products_quantity = $2 
                                    WHERE f_order_id=($3)
-                                   RETURNING f_product_id, order_products_quantity`;
+                                   RETURNING *`;
       const orderProducts = [];
       for (const product of productInfo) {
         const { f_product_id, order_products_quantity } = product;
@@ -149,10 +149,10 @@ export class storeOrder {
   }
 
   //Delete Order
-  async deleteOrder(id: number): Promise<order[]> {
+  async deleteOrder(id: number): Promise<order> {
     try {
       const conn = await pool.connect();
-      const sql1 = `DELETE FROM store_order_products WHERE f_order_id=($1)`;
+      const sql1 = `DELETE FROM store_order_products WHERE f_order_id=($1) RETURNING *`;
       await conn.query(sql1, [id]);
       const sql2 = `DELETE FROM store_orders WHERE order_id=($1)`;
       const result = await conn.query(sql2, [id]);
