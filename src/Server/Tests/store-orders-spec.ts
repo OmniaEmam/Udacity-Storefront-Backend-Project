@@ -39,6 +39,14 @@ describe('Store Order Model', () => {
 
   // Test Functions works
   describe('Store Order Functions works', () => {
+
+    async function Truncate() {
+      const conn = await pool.connect();
+      const sql = `TRUNCATE TABLE store_order_products , store_orders , store_users , store_products RESTART IDENTITY;`;
+      await conn.query(sql);
+      conn.release();
+    }
+
     const Product = {
       product_name: 'WhiteShoes',
       product_price: 300,
@@ -77,28 +85,7 @@ describe('Store Order Model', () => {
       expect(createdOrder.order_user_id).toBe(Order.order_user_id);
 
       //Delete
-      const conn = await pool.connect();
-
-      // user
-      const sqlUser = `SELECT user_id FROM store_users WHERE user_first_name =($1)`;
-      const resultUser = await conn.query(sqlUser, [User.user_first_name]);
-      const UserID: number = resultUser.rows[0].user_id;
-      // Product
-      const sqlProduct = `SELECT product_id FROM store_products WHERE product_name =($1)`;
-      const resultProduct = await conn.query(sqlProduct, [
-        Product.product_name,
-      ]);
-      const ProductID: number = resultProduct.rows[0].product_id;
-      // Order
-      const sql = `SELECT order_id FROM store_orders WHERE order_status=($1)`;
-      const result = await conn.query(sql, [Order.order_status]);
-      const OrderID: number = result.rows[0].order_id;
-
-      conn.release();
-
-      await orderOfStore.deleteOrder(OrderID);
-      await userOfStore.deleteUser(UserID);
-      await productOfStore.deleteProduct(ProductID);
+      await Truncate();
     });
 
     // edit a order
@@ -147,9 +134,7 @@ describe('Store Order Model', () => {
       );
       expect(editOrder.order_status).toBe(editedOrder.order_status);
 
-      await orderOfStore.deleteOrder(OrderID);
-      await userOfStore.deleteUser(UserID);
-      await productOfStore.deleteProduct(ProductID);
+      await Truncate();
     });
 
     // get orders length
@@ -161,28 +146,7 @@ describe('Store Order Model', () => {
       const orders: order[] = await orderOfStore.index();
       expect(orders.length).toBeGreaterThan(0);
 
-      // Order
-      const conn = await pool.connect();
-      const sql = `SELECT order_id FROM store_orders WHERE order_status=($1)`;
-      const result = await conn.query(sql, [Order.order_status]);
-      const OrderID: number = result.rows[0].order_id;
-
-      // user
-      const sqlUser = `SELECT user_id FROM store_users WHERE user_first_name =($1)`;
-      const resultUser = await conn.query(sqlUser, [User.user_first_name]);
-      const UserID: number = resultUser.rows[0].user_id;
-      // Product
-      const sqlProduct = `SELECT product_id FROM store_products WHERE product_name =($1)`;
-      const resultProduct = await conn.query(sqlProduct, [
-        Product.product_name,
-      ]);
-      const ProductID: number = resultProduct.rows[0].product_id;
-
-      conn.release();
-
-      await orderOfStore.deleteOrder(OrderID);
-      await userOfStore.deleteUser(UserID);
-      await productOfStore.deleteProduct(ProductID);
+      await Truncate();
     });
 
     // delete order
@@ -212,6 +176,8 @@ describe('Store Order Model', () => {
       await userOfStore.deleteUser(UserID);
       await productOfStore.deleteProduct(ProductID);
       expect(createdOrder.productInfo).toBeNull;
+
+      await Truncate();
     });
   });
 });

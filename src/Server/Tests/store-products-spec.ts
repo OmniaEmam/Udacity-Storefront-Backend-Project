@@ -36,8 +36,11 @@ describe('Store Product Model', () => {
       product_category: 'Shoe',
     } as product;
 
-    async function deleteProduct(id: number) {
-      return productOfStore.deleteProduct(id);
+    async function Truncate() {
+      const conn = await pool.connect();
+      const sql = `TRUNCATE TABLE store_order_products , store_orders , store_users , store_products RESTART IDENTITY;`;
+      await conn.query(sql);
+      conn.release();
     }
 
     it('should create a product', async () => {
@@ -47,12 +50,7 @@ describe('Store Product Model', () => {
         expect(createdProduct.product_price).toBe(Product.product_price);
         expect(createdProduct.product_category).toBe(Product.product_category);
       }
-      const conn = await pool.connect();
-      const sql = `SELECT product_id FROM store_products WHERE product_name =($1)`;
-      const result = await conn.query(sql, [Product.product_name]);
-      const ProductID: number = result.rows[0].product_id;
-      conn.release();
-      await deleteProduct(ProductID);
+      await Truncate();
     });
 
     // Test index return products length
@@ -60,12 +58,7 @@ describe('Store Product Model', () => {
       await productOfStore.addProduct(Product);
       const products = await productOfStore.index();
       expect(products.length).toBeGreaterThan(0);
-      const conn = await pool.connect();
-      const sql = `SELECT product_id FROM store_products WHERE product_name =($1)`;
-      const result = await conn.query(sql, [Product.product_name]);
-      const ProductID: number = result.rows[0].product_id;
-      conn.release();
-      await deleteProduct(ProductID);
+      await Truncate();
     });
 
     // Test index return products by ProductID
@@ -80,7 +73,7 @@ describe('Store Product Model', () => {
       expect(products.product_name).toBe(createdProduct.product_name);
       expect(products.product_price).toBe(createdProduct.product_price);
       expect(products.product_category).toBe(createdProduct.product_category);
-      await deleteProduct(ProductID);
+      await Truncate();
     });
 
     // Test index return product edited
@@ -103,7 +96,7 @@ describe('Store Product Model', () => {
       expect(products.product_name).toBe(editedProduct.product_name);
       expect(products.product_price).toBe(editedProduct.product_price);
       expect(products.product_category).toBe(editedProduct.product_category);
-      await deleteProduct(ProductID);
+      await Truncate();
     });
 
     // Test index return product deleted
@@ -118,6 +111,7 @@ describe('Store Product Model', () => {
       expect(products.product_name).toBeNull;
       expect(products.product_price).toBeNull;
       expect(products.product_category).toBeNull;
+      await Truncate();
     });
   });
 });

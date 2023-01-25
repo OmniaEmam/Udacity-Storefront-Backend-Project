@@ -9,7 +9,7 @@
     "lint": "eslint src/**/**.ts",
     "prettier": "prettier src/**/**.ts --config .prettierrc --write",
     "migrate": "db-migrate --env test up && db-migrate up",
-    "jasmine": "set ENV=test && tsc && db-migrate up --env test && tsc && jasmine && db-migrate reset"
+    "jasmine": "set process.env.ENV=test && db-migrate --env test up && tsc && jasmine && db-migrate down"
   },
   "author": "",
   "license": "ISC",
